@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: Task Manager
+  version: "1.0.0"
+  description: Operations for a user to manage their tasks and admin to manage users.
+
+servers:
+  - url: http://127.0.0.1:5000/api
+    description: Developent Server
+
+paths:
+  /users/create:
+    post:
+      operationId: app.users.create_user
+      tags:
+        - Users
+      description: >
+        Add user to database
+      summary: Add a user to database
+      requestBody:
+        required: true
+        description: User to be added
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  description: User's unique name
+                  type: string
+                email:
+                  description: User's unique email
+                  type: string
+                password:
+                  description: User's raw password
+                  type: string
+      responses:
+        201:
+          description: Successfully add a user to database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        409:
+          description: User already exixts in database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

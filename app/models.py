@@ -1,4 +1,4 @@
-from app import db, mash
+from . import db, mash
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 
@@ -177,6 +177,6 @@ class TaskSchema(mash.Schema):
 
 
 # Task schema for serializing
-class UserSchema(mash.Schema):
+class UserSchema(mash.ModelSchema):
     class Meta:
         model = User

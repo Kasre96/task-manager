@@ -13,9 +13,6 @@ flask_app = app.app
 # config
 app.app.config.from_object(DevelopmentConfig)
 
-# Swagger Documentation
-# app.add_api('swagger.yaml')
-
 # Ensure instance path exists
 try:
     os.makedirs(app.app.instance_path)
@@ -27,12 +24,14 @@ db = SQLAlchemy(flask_app)
 mash = Marshmallow(flask_app)
 migrate = Migrate(flask_app, db)
 
+from app import models
+
 # Index page
 @app.route('/')
 def home():
     return 'Hello, World!'
 
 
-from app import models
+
 
 
