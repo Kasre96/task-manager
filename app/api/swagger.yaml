@@ -53,3 +53,116 @@ paths:
                 properties:
                   message:
                     type: string
+  /users:
+    get:
+      operationId: app.users.read_all
+      tags:
+        - Users
+      summary: Fetch all users in Database
+      description: Return a list of all users found in database
+      responses:
+        200:
+          description: Successfully fetch a list of all users
+        404:
+          description: No users found on database
+  /users/{username}:
+    get:
+      operationId: app.users.read_one
+      tags:
+        - Users
+      description: Fetch a user by username
+      summary: Fetch one user from database
+      parameters:
+        - name: username
+          in: path
+          description: First name of user to retrieved
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully read a user from database
+        404:
+          description: User not found in database
+  /users/{name}/update:
+    put:
+      operationId: app.users.update_user
+      tags:
+        - Users
+      description: Update user
+      summary: Fetch one user from database and update them
+      requestBody:
+        required: true
+        description: User to be updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  description: User's unique name
+                  type: string
+                email:
+                  description: User's unique email
+                  type: string
+      parameters:
+        - name: name
+          in: path
+          description: First name of user to updated
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully update a user
+        500:
+          description: Error updating user
+        404:
+          description: User not found
+  /users/{username}/delete:
+    delete:
+      operationId: app.users.delete_user
+      tags:
+        - Users
+      description: Delete user
+      summary: Fetch one user from database and delete them
+      parameters:
+        - name: username
+          in: path
+          description: First name of user to deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully delete a user
+        500:
+          description: Error deleting user
+  /tasks/create:
+    post:
+      operationId: app.tasks.create_task
+      tags:
+        - Tasks
+      description: >
+        Add task to database
+      summary: Add a task to database
+      requestBody:
+        required: true
+        description: task to be added
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  description: Title of the task
+                  type: string
+                description:
+                  description: A short description of the task
+                  type: string
+      responses:
+        201:
+          description: Successfully add a task to database
+        400:
+          description: Invalid task body.
+

@@ -48,7 +48,7 @@ class User(db.Model):
             if email:
                 record.email = email
             db.session.commit()
-        return cls.query.filter_by(id=id).first()
+        return cls.query.filter_by(username=name).first()
 
     # delete by name
     @classmethod
@@ -104,7 +104,7 @@ class Task(db.Model):
     date_started = db.Column(db.DateTime)
     date_completed = db.Column(db.DateTime)
     date_cancelled = db.Column(db.DateTime)
-    status = db.Column(db.Integer, default=0)
+    status = db.Column(db.String(30), default='todo')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Crud Operations
@@ -132,19 +132,19 @@ class Task(db.Model):
             if status == current_status:
                 pass
             else:
-                if status == 0:
+                if status == 'todo':
                     record.status = status
                     record.date_cancelled = record.date_completed = record.date_started = None
-                elif status == 1:
-                    record.date_started = datetime.now()
+                elif status == 'ongoing':
+                    record.date_started = datetime.datetime.now()
                     record.status = status
                     record.date_cancelled = record.date_completed = None
-                elif status == 2:
-                    record.date_completed = datetime.now()
+                elif status == 'completed':
+                    record.date_completed = datetime.datetime.now()
                     record.status = status
                     record.date_cancelled = None
-                elif status == 3:
-                    record.date_cancelled = datetime.now()
+                elif status == 'cancelled':
+                    record.date_cancelled = datetime.datetime.now()
                     record.status = status
                     record.date_completed = None
                 else:
@@ -169,14 +169,22 @@ class Task(db.Model):
         tasks = cls.query.all()
         return tasks
 
+    # fetch one task
+    @classmethod
+    def fetch_one_task(cls, id):
+        task = cls.query.filter_by(id=id)
+        return task
+
 
 # Task schema for serializing
-class TaskSchema(mash.Schema):
+class TaskSchema(mash.ModelSchema):
     class Meta:
         model = Task
 
 
 # Task schema for serializing
-class UserSchema(mash.ModelSchema):
+class UserSchema(mash.Schema):
     class Meta:
-        model = User
+        fields = ('username', 'email', 'tasks')
+    tasks = mash.Nested(TaskSchema)
+

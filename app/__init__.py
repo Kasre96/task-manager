@@ -5,6 +5,9 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
+import warnings
+
+warnings.filterwarnings('ignore')
 
 # connexion app
 app = connexion.App(__name__, specification_dir='./api/')
@@ -22,9 +25,10 @@ except OSError:
 # Database
 db = SQLAlchemy(flask_app)
 mash = Marshmallow(flask_app)
-migrate = Migrate(flask_app, db)
 
 from app import models
+
+migrate = Migrate(flask_app, db)
 
 # Index page
 @app.route('/')
