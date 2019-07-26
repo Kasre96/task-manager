@@ -25,8 +25,9 @@ def create_task():
 # Fetch one task
 def fetch_one(id):
     task = Task.fetch_one_task(id)
+    print(task)
 
-    if task:
+    if not task:
         return jsonify({"message": "Task not found"}), 404
     else:
         return task_schema.dump(task).data, 200
@@ -71,6 +72,9 @@ def update_task(id):
 # Delete task
 def delete_task(id):
     task = Task()
-    task.delete_by_id(id)
+    if task.delete_by_id(id):
+        return jsonify({"message": "Task deleted successfully"}), 200
+    else:
+        return jsonify({"message": "Error deleting task. Task not found"}), 404
 
-    return jsonify({"message": "Task deleted successfully"}), 200
+

@@ -172,7 +172,7 @@ class Task(db.Model):
     # fetch one task
     @classmethod
     def fetch_one_task(cls, id):
-        task = cls.query.filter_by(id=id)
+        task = cls.query.filter_by(id=id).first()
         return task
 
 

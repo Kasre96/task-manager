@@ -165,4 +165,94 @@ paths:
           description: Successfully add a task to database
         400:
           description: Invalid task body.
+  /tasks:
+    get:
+      operationId: app.tasks.fetch_all
+      tags:
+        - Tasks
+      summary: Fetch all tasks in Database
+      description: Return a list of all tasks for all users
+      responses:
+        200:
+          description: Successfully fetch a list of all tasks
+        404:
+          description: No tasks found in database
+  /tasks/{id}:
+    get:
+      operationId: app.tasks.fetch_one
+      tags:
+        - Tasks
+      description: Fetch a task by id
+      summary: Fetch one task from database
+      parameters:
+        - name: id
+          in: path
+          description: Id of task to be retrieved
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully fetch a task from database
+        404:
+          description: Task not found in database
+  /tasks/{id}/update:
+    put:
+      operationId: app.tasks.update_task
+      tags:
+        - Tasks
+      description: Update task
+      summary: Fetch one task from database and update it
+      requestBody:
+        required: true
+        description: Task to be updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  description: Title of the task
+                  type: string
+                description:
+                  description: A short description of the task
+                  type: string
+                status:
+                  description: Status of the task
+                  type: string
+      parameters:
+        - name: id
+          in: path
+          description: id of task to updated
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully update a task
+        500:
+          description: Error updating task
+        404:
+          description: Task not found
+        400:
+          description: Invalid request body. JSON expected
+  /tasks/{id}/delete:
+    delete:
+      operationId: app.tasks.delete_task
+      tags:
+        - Tasks
+      description: Delete task
+      summary: Delete task from database
+      parameters:
+        - name: id
+          in: path
+          description: id of task to deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully delete a task
+        500:
+          description: Error deleting task
 
