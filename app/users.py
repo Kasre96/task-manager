@@ -1,11 +1,12 @@
 from app.models import User, UserSchema
 from flask import jsonify, request
+from flask_jwt_extended import create_access_token, get_jwt_identity
 
 user_schema = UserSchema(strict=True)
 users_schema = UserSchema(strict=True, many=True)
 
 
-# Create user
+# Create use
 def create_user():
     if request.is_json:
         # fetch the details
@@ -26,9 +27,16 @@ def create_user():
 
         # add user to database
         user = User(username=username, email=email, password=password_hash)
-        user.insert_record()
+        record = user.insert_record()
 
-        return jsonify({"message": "{} added successfully".format(user.username)}), 201
+        # Create access token
+        access_token = create_access_token(identity=record.id)
+
+        return jsonify({
+            "message": "{} added successfully".format(record.username),
+            "token": access_token
+            }), 201
+
         # return user_schema.dump(record).data, 201
     else:
         return jsonify({"message": "Bad request body. JSON expected."}), 400

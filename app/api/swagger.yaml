@@ -44,6 +44,8 @@ paths:
                 properties:
                   message:
                     type: string
+                  token:
+                    type: string
         409:
           description: User already exixts in database
           content:
@@ -146,6 +148,8 @@ paths:
       description: >
         Add task to database
       summary: Add a task to database
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         description: task to be added
@@ -165,6 +169,8 @@ paths:
           description: Successfully add a task to database
         400:
           description: Invalid task body.
+        401:
+          description: Access token missing or invalid
   /tasks:
     get:
       operationId: app.tasks.fetch_all
@@ -256,3 +262,10 @@ paths:
         500:
           description: Error deleting task
 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: app.tasks.decode_jwt_token

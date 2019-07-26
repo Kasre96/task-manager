@@ -1,11 +1,18 @@
 from app.models import Task, TaskSchema
 from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required, get_raw_jwt, decode_token
 
 task_schema = TaskSchema(strict=True)
 tasks_schema = TaskSchema(strict=True, many=True)
 
 
+def decode_jwt_token(token):
+    # token = request.headers.get('Authorization')
+    return decode_token(encoded_token=token)
+
+
 # add task
+@jwt_required
 def create_task():
     if request.is_json:
         data = request.get_json(force=True)
@@ -13,11 +20,13 @@ def create_task():
         # task details
         title = data['title']
         description = data['description']
+        uid = get_jwt_identity()
+        print(uid)
 
-        task = Task(title=title, description=description)
+        task = Task(title=title, description=description, user_id=uid)
         record = task.insert_record()
         # return jsonify({"message": "Task added successfully"}),
-        return task_schema.dump(task).data, 201
+        return task_schema.dump(record).data, 201
     else:
         return jsonify({"message": "Bad request body. JSON expected."}), 400
 

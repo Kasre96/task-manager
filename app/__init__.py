@@ -6,6 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 import warnings
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 warnings.filterwarnings('ignore')
 
@@ -29,6 +33,9 @@ mash = Marshmallow(flask_app)
 from app import models
 
 migrate = Migrate(flask_app, db)
+
+# jwt
+JWTManager(flask_app)
 
 # Index page
 @app.route('/')
