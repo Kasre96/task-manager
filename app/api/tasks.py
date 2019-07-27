@@ -1,6 +1,6 @@
 from app.models import Task, TaskSchema
 from flask import jsonify, request
-from flask_jwt_extended import get_jwt_identity, jwt_required, get_raw_jwt, decode_token
+from flask_jwt_extended import get_jwt_identity, jwt_required, get_current_user, decode_token
 
 task_schema = TaskSchema(strict=True)
 tasks_schema = TaskSchema(strict=True, many=True)
@@ -20,6 +20,8 @@ def create_task():
         # task details
         title = data['title']
         description = data['description']
+
+        # User's id from token
         uid = get_jwt_identity()
         print(uid)
 
@@ -32,6 +34,7 @@ def create_task():
 
 
 # Fetch one task
+@jwt_required
 def fetch_one(id):
     task = Task.fetch_one_task(id)
     print(task)

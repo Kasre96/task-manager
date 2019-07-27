@@ -10,6 +10,7 @@ class User(db.Model):
     username = db.Column(db.String(30), unique=True, nullable=False, index=True)
     email = db.Column(db.String(30), unique=True, nullable=False, index=True)
     password = db.Column(db.String())
+    token = db.Column(db.String(500))
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
 
     # Add record
@@ -38,22 +39,22 @@ class User(db.Model):
     def fetch_all_users(cls):
         return cls.query.all()
 
-    # update by name
+    # update by id
     @classmethod
-    def update_user_by_name(cls, name, username=None, email=None):
-        record = cls.query.filter_by(username=name).first()
+    def update_user_by_id(cls, id, username=None, email=None):
+        record = cls.query.filter_by(id=id).first()
         if record:
             if username:
                 record.username = username
             if email:
                 record.email = email
             db.session.commit()
-        return cls.query.filter_by(username=name).first()
+        return cls.query.filter_by(id=id).first()
 
-    # delete by name
+    # delete by id
     @classmethod
-    def delete_user_by_username(cls, username):
-        record = cls.query.filter_by(username=username)
+    def delete_user_by_id(cls, id):
+        record = cls.query.filter_by(id=id)
         if record.first():
             record.delete()
             db.session.commit()
@@ -185,6 +186,6 @@ class TaskSchema(mash.ModelSchema):
 # Task schema for serializing
 class UserSchema(mash.Schema):
     class Meta:
-        fields = ('username', 'email', 'tasks')
+        fields = ('username', 'email', 'tasks', 'token')
     tasks = mash.Nested(TaskSchema)
 

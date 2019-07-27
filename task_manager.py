@@ -1,4 +1,4 @@
-from app import app, flask_app
+from app import app, flask_app, migrate
 from flask import jsonify
 
 if __name__ == '__main__':

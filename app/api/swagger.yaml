@@ -3,6 +3,9 @@ info:
   title: Task Manager
   version: "1.0.0"
   description: Operations for a user to manage their tasks and admin to manage users.
+  contact:
+    name: Developer
+    email: isaka.muia@gmail.com
 
 servers:
   - url: http://127.0.0.1:5000/api
@@ -11,11 +14,11 @@ servers:
 paths:
   /users/create:
     post:
-      operationId: app.users.create_user
+      operationId: app.api.users.create_user
       tags:
-        - Users
+        - Admin
       description: >
-        Add user to database
+        Add new user to database
       summary: Add a user to database
       requestBody:
         required: true
@@ -37,29 +40,44 @@ paths:
       responses:
         201:
           description: Successfully add a user to database
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  token:
-                    type: string
         409:
           description: User already exixts in database
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+        401:
+          description: Invalid or missing autjentication token.
+  /users/login:
+    post:
+      operationId: app.api.users.login_user
+      tags:
+        - Admin
+      description: >
+        Login user
+      summary: Login user
+      requestBody:
+        required: true
+        description: User to be logged in
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  description: User's unique name
+                  type: string
+                password:
+                  description: User's raw password
+                  type: string
+      responses:
+        200:
+          description: Successfully login user
+        404:
+          description: Invalid username or password
+        400:
+          description: Invalid request body. JSON expected.
   /users:
     get:
-      operationId: app.users.read_all
+      operationId: app.api.users.read_all
       tags:
-        - Users
+        - Admin
       summary: Fetch all users in Database
       description: Return a list of all users found in database
       responses:
@@ -67,32 +85,36 @@ paths:
           description: Successfully fetch a list of all users
         404:
           description: No users found on database
-  /users/{username}:
+  /users/{id}:
     get:
-      operationId: app.users.read_one
+      operationId: app.api.users.read_one
       tags:
         - Users
       description: Fetch a user by username
       summary: Fetch one user from database
+      security:
+        - bearerAuth: []
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: First name of user to retrieved
+          description: id of user to retrieved
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         200:
           description: Successfully read a user from database
         404:
           description: User not found in database
-  /users/{name}/update:
+  /users/{id}/update:
     put:
-      operationId: app.users.update_user
+      operationId: app.api.users.update_user
       tags:
         - Users
       description: Update user
       summary: Fetch one user from database and update them
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         description: User to be updated
@@ -108,9 +130,9 @@ paths:
                   description: User's unique email
                   type: string
       parameters:
-        - name: name
+        - name: id
           in: path
-          description: First name of user to updated
+          description: id of user to updated
           required: true
           schema:
             type: string
@@ -121,28 +143,52 @@ paths:
           description: Error updating user
         404:
           description: User not found
-  /users/{username}/delete:
+  /users/{id}/delete:
     delete:
-      operationId: app.users.delete_user
+      operationId: app.api.users.delete_user
       tags:
         - Users
       description: Delete user
       summary: Fetch one user from database and delete them
+      security:
+        - bearerAuth: []
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: First name of user to deleted
+          description: id of user to deleted
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         200:
           description: Successfully delete a user
         500:
           description: Error deleting user
+  /users/{id}/tasks:
+    get:
+      operationId: app.api.users.user_tasks
+      tags:
+        - Users
+      description: Fetch all tasks belonging to that particular user
+      summary: Fetch a users tasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: id of user
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully fetch user's tasks
+        400:
+          description: Error deleting user
+
   /tasks/create:
     post:
-      operationId: app.tasks.create_task
+      operationId: app.api.tasks.create_task
       tags:
         - Tasks
       description: >
@@ -173,7 +219,7 @@ paths:
           description: Access token missing or invalid
   /tasks:
     get:
-      operationId: app.tasks.fetch_all
+      operationId: app.api.tasks.fetch_all
       tags:
         - Tasks
       summary: Fetch all tasks in Database
@@ -183,13 +229,15 @@ paths:
           description: Successfully fetch a list of all tasks
         404:
           description: No tasks found in database
-  /tasks/{id}:
+  /users/{uid}/tasks/{id}:
     get:
-      operationId: app.tasks.fetch_one
+      operationId: app.api.users.user_single_task
       tags:
-        - Tasks
-      description: Fetch a task by id
-      summary: Fetch one task from database
+        - Users
+      description: Fetch a single task for a user
+      summary: Fetch one user's task
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -197,18 +245,26 @@ paths:
           required: true
           schema:
             type: integer
+        - name: uid
+          in: path
+          description: Id of user
+          required: true
+          schema:
+            type: integer
       responses:
         200:
           description: Successfully fetch a task from database
         404:
-          description: Task not found in database
-  /tasks/{id}/update:
+          description: Task/User not found in database
+  /users/{uid}/tasks/{id}/update:
     put:
-      operationId: app.tasks.update_task
+      operationId: app.api.users.update_user_task
       tags:
-        - Tasks
-      description: Update task
-      summary: Fetch one task from database and update it
+        - Users
+      description: Update a user's task
+      summary: Update user task
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         description: Task to be updated
@@ -233,26 +289,40 @@ paths:
           required: true
           schema:
             type: integer
+        - name: uid
+          in: path
+          description: id of user
+          required: true
+          schema:
+            type: integer
       responses:
         200:
           description: Successfully update a task
         500:
           description: Error updating task
         404:
-          description: Task not found
+          description: Task/User not found
         400:
           description: Invalid request body. JSON expected
-  /tasks/{id}/delete:
+  /users/{uid}/tasks/{id}/delete:
     delete:
-      operationId: app.tasks.delete_task
+      operationId: app.api.users.delete_user_task
       tags:
-        - Tasks
-      description: Delete task
-      summary: Delete task from database
+        - Users
+      description: Delete a users task
+      summary: Delete a users task from database
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
           description: id of task to deleted
+          required: true
+          schema:
+            type: integer
+        - name: uid
+          in: path
+          description: id of user
           required: true
           schema:
             type: integer
@@ -261,6 +331,8 @@ paths:
           description: Successfully delete a task
         500:
           description: Error deleting task
+        404:
+          description: User/Task not found.
 
 components:
   securitySchemes:
@@ -268,4 +340,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      x-bearerInfoFunc: app.tasks.decode_jwt_token
+      x-bearerInfoFunc: app.api.tasks.decode_jwt_token
