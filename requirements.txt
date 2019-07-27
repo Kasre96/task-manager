@@ -132,7 +132,7 @@ Send2Trash==1.5.0
 six==1.12.0
 soupsieve==1.9.2
 spacy==2.1.6
-SQLAlchemy==1.2.17
+SQLAlchemy>=1.2.17
 srsly==0.0.7
 swagger-ui-bundle==0.0.3
 tensorboard==1.13.1
@@ -149,7 +149,7 @@ tornado==6.0.2
 tqdm==4.32.2
 traitlets==4.3.2
 typed-ast==1.4.0
-urllib3==1.24.1
+urllib3>=1.24.2
 wasabi==0.2.2
 wcwidth==0.1.7
 webencodings==0.5.1
