@@ -1,7 +1,9 @@
 from app.models import User, UserSchema, Task, TaskSchema
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, jwt_required
-from app import db
+from flask_jwt_extended import (
+    create_access_token, jwt_required, create_refresh_token, jwt_refresh_token_required, get_jwt_identity, fresh_jwt_required
+)
+from app import db, app, flask_app
 import datetime
 
 user_schema = UserSchema(strict=True)
@@ -9,6 +11,17 @@ users_schema = UserSchema(strict=True, many=True)
 
 task_schema = TaskSchema(strict=True)
 tasks_schema = TaskSchema(strict=True, many=True)
+
+
+# method to refresh expired access token
+@app.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    current_user = get_jwt_identity()
+    ret = {
+        'access_token': create_access_token(identity=current_user, fresh=False)
+    }
+    return jsonify(ret), 200
 
 
 # Create use
@@ -36,10 +49,11 @@ def create_user():
 
         # Create access token
         expiry_days = datetime.timedelta(days=1)
-        access_token = create_access_token(identity=record.id, expires_delta=expiry_days)
+        access_token = create_access_token(identity=record.id, expires_delta=expiry_days, fresh=True)
+        refresh_token = create_refresh_token(identity=record.id)
 
         # add token to database
-        record.token = access_token
+        record.token = refresh_token
         db.session.commit()
 
         return jsonify({
@@ -63,7 +77,7 @@ def login_user():
             user = User.fetch_user_by_username(username)
 
             expiry_days = datetime.timedelta(days=1)
-            access_token = create_access_token(identity=user.id, expires_delta=expiry_days)
+            access_token = create_access_token(identity=user.id, expires_delta=expiry_days, fresh=True)
             return jsonify({
                 "message": "Login successful",
                 "token": access_token
@@ -102,6 +116,7 @@ def read_all():
 
 # Update user
 @jwt_required
+@fresh_jwt_required
 def update_user(id):
     if request.is_json:
         username = None

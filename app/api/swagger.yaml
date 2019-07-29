@@ -7,9 +7,19 @@ info:
     name: Developer
     email: isaka.muia@gmail.com
 
+tags:
+  - name: Admin
+    description: Admin operations
+  - name: Tasks
+    description: Task operations
+  - name: Users
+    description: User operations
+
 servers:
   - url: http://127.0.0.1:5000/api
     description: Developent Server
+  - url: http://mytaskmanager101/api
+    description: Production Server
 
 paths:
   /users/create:

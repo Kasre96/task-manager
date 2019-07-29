@@ -23,7 +23,7 @@ def create_task():
 
         # User's id from token
         uid = get_jwt_identity()
-        print(uid)
+        # print(uid)
 
         task = Task(title=title, description=description, user_id=uid)
         record = task.insert_record()

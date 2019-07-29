@@ -10,3 +10,12 @@ class DevelopmentConfig:
 
 class ProductionConfig:
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = ''
+    SECRET_KEY = 'some_random_string'
+    JWT_SECRET_KEY = 'somerandomnstring'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+class TestingConfig:
+    TESTING = True
+
